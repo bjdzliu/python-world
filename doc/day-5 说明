@@ -1,60 +1,70 @@
-目的:把一个函数映射为一个URL处理函数
-def get(path):    #先定义@get()
-    '''
-    Define decorator @get('/path')
-    '''
-    def decorator(func):
-        @functools.wraps(func)
-        def wrapper(*args, **kw):
-            return func(*args, **kw)
-        wrapper.__method__ = 'GET'
-        wrapper.__route__ = path
-        return wrapper
-    return decorator
-
-
-@get('/')
-async def index(request):
-    users = await User.findAll()
-    return {
-        '__template__': 'test.html',
-        'users': users
-}
-
-
-
-
-
-
-
-from urllib.parse import urlparse
-from urllib.parse import parse_qs
-print(dir(urlparse))
-url='http://www.baidu.com/index.php?username=guol&param2=4'
-def qs(url):
-    query = urlparse(url).query
-    print(parse_qs(query))  #{'username': ['guol'], 'param2': ['4']}
-    print(parse_qs(query).items()) #dict_items([('username', ['guol']), ('param2', ['4'])])
-    return dict([(k,v[0]) for k,v in parse_qs(query).items()])
-print(qs(url))
-
-for k,v in [(1,"1"),(2,"2")]:
-    print(k,v)
-
-
-Tornado与网络相关的所有内容:
-
+handler说明：
+可调用，参数是request，返回类型StreamResponse。
+知识点：http://aiohttp.readthedocs.io/en/stable/web_reference.html#streamresponse
+def handler(request):
+    return web.Response()
 
 Application类实际是一些Handler的集合.
 URL处理函数,就叫handler。
+request说明：
+知识点：https://aiohttp.readthedocs.io/en/stable/web_reference.html#aiohttp.web.Request
+You should never create the Request instance manually – aiohttp.web does it for you
 
-文章中  定义	 是一个逻辑处理函数
+--------------- 模块 app.py 中的 init_jinja2 说明 --------------------
+函数名称:init_jinja2
+函数输入：app对象，dict
+函数输出：Jinja2 使用的Environment对象，可以用来加载模板
+init函数中调用init_jinja2(app, filters=dict(datetime=datetime_filter))
+def init_jinja2(app, **kw):        //dict : {'filters': {'datetime': 4}}
+    logging.info('init jinja2...')
+    options = dict(
+        autoescape = kw.get('autoescape', True),     dict.get(key, default=None)如果不存在则返回一个默认值，如果设置了则是设置的，否则就是None
+        block_start_string = kw.get('block_start_string', '{%'),
+        block_end_string = kw.get('block_end_string', '%}'),
+        variable_start_string = kw.get('variable_start_string', '{{'),
+        variable_end_string = kw.get('variable_end_string', '}}'),
+        auto_reload = kw.get('auto_reload', True)
+    )     得到类似这样的一个dict {'options':{'filters': {'datetime': 4},'block_start_string':'{%' }}
+    path = kw.get('path', None)
+    if path is None:
+        path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')    #把目录和文件名合成一个路径  #os.path.abspath(path) #返回绝对路径
+        #__file__ 是用来获得当前模块所在的路径的
+    logging.info('set jinja2 template path: %s' % path)   #获得当前模块下的templates文件夹的绝对路径
+    env = Environment(loader=FileSystemLoader(path), **options)  初始化一个Environment对象。通过FileSystemLoader(系统路径)
+    filters = kw.get('filters', None)
+    if filters is not None:  #在options=dict()构建的kw里面已经有filters。
+        for name, f in filters.items():
+            env.filters[name] = f
+    app['__templating__'] = env  加载器是app['__templating__']，它加载html文件，使用方法get_template('mytemplate.html')
+    #print(app.__getitem__('__file1__')) 利用对象中的内置方法'__setitem__'
+    知识点：app对象可以迭代。http://www.cnblogs.com/scolia/p/5690210.html
+
+函数 response_factory
+使用： app = web.Application(loop=loop, middlewares=[
+        logger_factory, response_factory
+    ])
+response_factory 接收app handler 返回一个handler
+logger_factory接收的handler是response_factory返回的handler
+response_factory的handler是被加载的那个router的handler
+
+------------ app.py 模块中的 middleware ，预处理url -----------------
+@asyncio.coroutine
+def logger_factory(app, handler):
+    @asyncio.coroutine
+    def logger(request):
+        # 记录日志:
+        logging.info('Request: %s %s' % (request.method, request.path))
+        # 继续处理请求:
+        return (yield from handler(request))
+    return logger
+
 
 对于__call__
 对象通过提供__call__(slef, [,*args [,**kwargs]])方法可以模拟函数的行为，如果一个对象x提供了该方法，就可以像函数一样使用它，也就是说x(arg1, arg2...) 等同于调用x.__call__(self, arg1, arg2) 。
-request??
-https://aiohttp.readthedocs.io/en/stable/web_reference.html#aiohttp.web.Request
-You should never create the Request instance manually – aiohttp.web does it for you
+
+__new__： 对象的创建，是一个静态方法，第一个参数是cls。(想想也是，不可能是self，对象还没创建，哪来的self)
+__init__ ： 对象的初始化， 是一个实例方法，第一个参数是self。
+__call__ ： 对象可call，注意不是类，是对象。
 
 最简单的例子
 from aiohttp import web
@@ -74,95 +84,108 @@ web.run_app(app)
 Application contains a router instance and a list of callbacks that will be called during application finishing.
 
 
+------------------------------------- 模块: handlers.py ------------------------------------
+
+@get('/')
+async def index(request):
+    users = await User.findAll()
+    return {
+        '__template__': 'test.html',
+        'users': users
+}
+
+-------------------------------------模块: coroweb.py  ------------------------------------
 RequestHandler的作用: 封装URL处理函数
-class RequestHandler(object):
-    def __init__(self, app, fn):   #app是一个application的对象, fn 是url处理函数
+从URL函数中分析其需要接收的参数，从request中获取必要的参数，调用URL函数。然后把结果转换为web.Response对象(在responsefactory里执行的)。
+满足app.router.add_route方法的要求。
+调用：app.router.add_route(method, path, RequestHandler(app, fn)) 因为RequestHandler有call方法，所以这样可以像函数一样使用RequestHandler(app, fn)
+有RequestHandler(request)类似函数
+涉及知识点：inspect https://docs.python.org/3/library/inspect.html#inspect.Parameter
+  class RequestHandler(object):
+
+    def __init__(self, app, fn):  #app是一个application的对象, fn是url处理函数
         self._app = app
         self._func = fn
-        ...
+  #has_xxx_arg(fn)   在coroweb模块中定义,语法知识查看doc/inspect-test.py。
+        self._has_request_arg = has_request_arg(fn)   fn函数必须存在request参数。检查fn函数的参数，是否存在request Parameter，如果有，返回True .
+        self._has_var_kw_arg = has_var_kw_arg(fn)   检查fn函数的参数，是否存在dict类型，如果有，返回True            # 判断是否有类似 **arges 的形参
+        self._has_named_kw_args = has_named_kw_args(fn) 是否存在KEYWORD_ONLY类型的Parameter，如果有，返回True
+        self._named_kw_args = get_named_kw_args(fn)   把KEYWORD_ONLY类型的Parameter 放到args[]
+        self._required_kw_args = get_required_kw_args(fn)   把KEYWORD_ONLY类型的Parameter 放到args[]，不包含有默认值的。
 
-    @asyncio.coroutine
-    def __call__(self, request): # 像使用函数一样,使用类 创建类实例时,可以使用: class(参数)
-        kw = ... 获取参数
-        r = yield from self._func(**kw)
-        return r   # 返回了url处理函数的结果
+    async def __call__(self, request):   # 像使用函数一样. RequestHandler(request)
+        kw = None
+        if self._has_var_kw_arg or self._has_named_kw_args or self._required_kw_args:  #针对不包含默认值的
+         # 对POST 方法的预处理如下
+            if request.method == 'POST':
+                if not request.content_type:
+                    return web.HTTPBadRequest('Missing Content-Type.')
+                ct = request.content_type.lower()    #通过不同的content_type，进行不同的处理
+                if ct.startswith('application/json'):   # contenttype=json
+                #知识点：request继承自BaseRequest
+                https://aiohttp.readthedocs.io/en/stable/web_reference.html#aiohttp.web.BaseRequest.json
+                #知识点：request.json 返回body的json格式
+                    params = await request.json()   #request.json返回dict类型
+                    if not isinstance(params, dict):
+                        return web.HTTPBadRequest('JSON body must be object.')
+                    kw = params
+                elif ct.startswith('application/x-www-form-urlencoded') or ct.startswith('multipart/form-data'):    # 这两种是post form的编码格式。
+                  #知识点：https://aiohttp.readthedocs.io/en/stable/web_reference.html#aiohttp.web.BaseRequest.post
+                  #request.post()返回 MultiDictProxy instance；
+                  #MultiDictProxy的作用，方便查看MultiDict
+                    params = await request.post()
+                    kw = dict(**params)   #dict()创建一个字典
+                else:
+                    return web.HTTPBadRequest('Unsupported Content-Type: %s' % request.content_type)
+          # 对GET 方法的预处理如下
+            if request.method == 'GET':
+                qs = request.query_string  #query string ("aa=100&cc=200")
+                if qs:
+                    kw = dict()
+                    for k, v in parse.parse_qs(qs, True).items():
+                    #知识点：https://docs.python.org/3.1/library/urllib.parse.html#urllib.parse.parse_qs
+                        kw[k] = v[0]
+        if kw is None:  #如果遇到get /mypath , 就会执行这一步
+        知识点：http://aiohttp.readthedocs.io/en/stable/web_reference.html#matchinfo
+        #match_info的来源：  match_info = yield from self._router.resolve(request)
+            kw = dict(**request.match_info)   # 好像得不到什么有用的东西 kw={}
+        else:   #构建了一个kw{数据来自request.post   request.json}
+            if not self._has_var_kw_arg and self._named_kw_args:   #如果fn函数形参没有dict类型，存在KEYWORD_ONLY
+                # remove all unamed kw:  kw里面可能会请求很多无用的key，如果name在fn函数定义里面，就接收，并放在copy{}
+                copy = dict()
+                for name in self._named_kw_args:
+                    if name in kw:
+                        copy[name] = kw[name]   #重新建立一个dict copy{}
+                kw = copy   #kw现在和copy一致
+            # check named arg:
+            for k, v in request.match_info.items():  # request.match_info
+                if k in kw:
+                #重复判断。url路径中的k w (match_info) 和 通过get post获得的k w是否有重复。
+                    logging.warning('Duplicate arg name in named arg and kw args: %s' % k)
+                kw[k] = v
+        if self._has_request_arg:
+            kw['request'] = request
+        # check required kw:
+        if self._required_kw_args:    #检查必要的参数是否已经赋值了。是否required_kw_args的参数在之前定义的kw中实现了
+            for name in self._required_kw_args:
+                if not name in kw:  # requesthandler函数的目的：构建一个kw{}。
+                    return web.HTTPBadRequest('Missing argument: %s' % name)
+        logging.info('call with args: %s' % str(kw))
+        try:
+            r = await self._func(**kw)  把构建好了的kw{request:True， 参数:值}
+            return r       # 返回了url处理函数的结果
+        except APIError as e:
+            return dict(error=e.error, data=e.data, message=e.message)
 
-再写一个函数,作用:确定url处理函数是否启用.
-def add_route(app, fn):
-    method = getattr(fn, '__method__', None)
-    path = getattr(fn, '__route__', None)
-    if path is None or method is None:
-        raise ValueError('@get or @post not defined in %s.' % str(fn))
-    if not asyncio.iscoroutinefunction(fn) and not inspect.isgeneratorfunction(fn):
-        fn = asyncio.coroutine(fn)
-    logging.info('add route %s %s => %s(%s)' % (method, path, fn.__name__, ', '.join(inspect.signature(fn).parameters.keys())))
-    app.router.add_route(method, path, RequestHandler(app, fn))   #启用
-
-add_route(method, path, handler, *, name=None, expect_handler=None)
-
-add_route单独处理url函数,麻烦,写一个函数add_routes,自动把handler模块的所有符合条件的函数注册了:
-def add_routes(app, module_name):
-    n = module_name.rfind('.')
-    if n == (-1):
-        mod = __import__(module_name, globals(), locals())
-    else:
-        name = module_name[n+1:]
-        mod = getattr(__import__(module_name[:n], globals(), locals(), [name]), name)
-    for attr in dir(mod):
-        if attr.startswith('_'):
-            continue
-        fn = getattr(mod, attr)
-        if callable(fn):
-            method = getattr(fn, '__method__', None)
-            path = getattr(fn, '__route__', None)
-            if method and path:
-                add_route(app, fn)
-
-怎么使用这么好的函数add_routes呢
-app = web.Application(loop=loop, middlewares=[
-    logger_factory, response_factory
-])
-init_jinja2(app, filters=dict(datetime=datetime_filter))
-add_routes(app, 'handlers')
-add_static(app)
-
-第二部分middleware ，预处理url
-@asyncio.coroutine
-def logger_factory(app, handler):
-    @asyncio.coroutine
-    def logger(request):
-        # 记录日志:
-        logging.info('Request: %s %s' % (request.method, request.path))
-        # 继续处理请求:
-        return (yield from handler(request))
-
-    return logger
+总结下requesthandler的工作思路：
+1 将handler函数的参数提取出来kw1。
+2 判断content-type的类型，json 和form表单形式有不同的处理
+3 针对GET和POST request，分别构建kw字典。
+4 比对kw1和kw的key，判断request提交过来的key name在kw中都有，然后赋值。新生成一个kw2
+5 将kw2传给handler函数，返回handler的处理结果。
 
 
-https://docs.python.org/3/library/inspect.html#inspect.Signature
- from inspect import Parameter
-from inspect import signature
->>> def foo(a, b, *, c, d=10):
->>> signature(foo)
-<Signature (a, b, *, c, d=10)>
->>> signature(foo).parameters   #
-mappingproxy(OrderedDict([('a', <Parameter "a">), ('b', <Parameter "b">), ('c', <Parameter "c">), ('d', <Parameter "d=10">)]))
 
->>> signature(foo).parameters.items()
-odict_items([('a', <Parameter "a">), ('b', <Parameter "b">), ('c', <Parameter "c">), ('d', <Parameter "d=10">)])
-
-
->>> def foo(a, b, *, c, d=10):
-...     pass
-
->>> sig = signature(foo)
->>> for param in sig.parameters.values():
-...     if (param.kind == param.KEYWORD_ONLY and  #KEYWORD_ONLY 取 * or *arg 后的参数
-...                        param.default is param.empty):
-...         print('Parameter:', param)
-Parameter: c
-
------------------------------说明--------------------
 def get_required_kw_args(fn):   #获取函数的参数
     args = []
     params = inspect.signature(fn).parameters   # params的类型  <class 'mappingproxy'>
@@ -171,31 +194,66 @@ def get_required_kw_args(fn):   #获取函数的参数
             args.append(name)  #保存key的值，该key没有value
     return tuple(args)   #args变成元组
 
-def get_named_kw_args(fn):  #获取函数的参数，判断是否有key
 
-def has_var_kw_arg(fn):   # 判断是否有类似 **arges 的形参
-
-
-------------------------------------------------------
-
->>> def foo(a, b, *, c, d=10):
-...  print(a,b,c)
-...
->>> foo(1,2,c=5)
-1 2 5
-
-The args and kwargs properties can be used to invoke functions:
-def test(a, *, b):
-    ...
-
-sig = signature(test)
-ba = sig.bind(10, b=20)
-test(*ba.args, **ba.kwargs)
+目的:把一个函数映射为一个URL处理函数
+调用： 在Requesthandler中会这样调用：   r = await self._func(**kw)
+def get(path):    #先定义@get()
+    '''
+    Define decorator @get('/path')
+    '''
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kw):
+            return func(*args, **kw)
+        wrapper.__method__ = 'GET'
+        wrapper.__route__ = path
+        return wrapper
+    return decorator
 
 
+再写一个函数,作用:确定url处理函数是否启用.
+def add_route(app, fn):  #经过装饰过的fn已经具有属性__method__   __route__
+    method = getattr(fn, '__method__', None)   __method__是装饰器听的 GET； __route__ 是上下文根,也就是访问路径
+    path = getattr(fn, '__route__', None)   查看fn是否有__route__属性或方法，然后返回值. 如果没有返回none
+    if path is None or method is None:
+        raise ValueError('@get or @post not defined in %s.' % str(fn))
+    if not asyncio.iscoroutinefunction(fn) and not inspect.isgeneratorfunction(fn):
+        fn = asyncio.coroutine(fn)
+    logging.info('add route %s %s => %s(%s)' % (method, path, fn.__name__, ', '.join(inspect.signature(fn).parameters.keys())))
+    app.router.add_route(method, path, RequestHandler(app, fn))   #方式是get 路径是/ .  启用
+
+知识点：http://aiohttp.readthedocs.io/en/stable/web.html?highlight=add_route
+#add_route(method, path, handler, *, name=None, expect_handler=None)
+handler的要求：返回一个web.Response,这里是通过facrory实现的。
+return web.Response(text="Hello, world")
+
+add_route一次添加一个handler函数。写一个函数add_routes,自动把handler模块的所有符合条件的函数注册了:
+def add_routes(app, module_name):
+调用方法：add_routes(app, 'handlers')
+    n = module_name.rfind('.')   rfind() 返回字符串最后一次出现的位置(从右向左查询)
+    if n == (-1):
+        mod = __import__(module_name, globals(), locals()) 返回元组列表。 # import sys <==>sys = __import__('sys')
+    else:
+        name = module_name[n+1:]       #如果module_name的路径带"."
+        mod = getattr(__import__(module_name[:n], globals(), locals(), [name]), name)
+    for attr in dir(mod):    返回模块的属性列表。
+        if attr.startswith('_'):
+            continue
+        fn = getattr(mod, attr)  获得模块的属性
+        if callable(fn):      判断该属性是否可以调用
+            method = getattr(fn, '__method__', None)    是GET方法
+            path = getattr(fn, '__route__', None)       访问路径是 /
+            if method and path:
+                add_route(app, fn)
 
 
-The C10K problem 如何处理高并发链接
-IO - 同步，异步，阻塞，非阻塞
+-------------------------------------模块: app.py ------------------
+模块中调用add_routes
+app = web.Application(loop=loop, middlewares=[
+    logger_factory, response_factory
+])
+init_jinja2(app, filters=dict(datetime=datetime_filter))
+add_routes(app, 'handlers')
+add_static(app)
 
 
