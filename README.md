@@ -5,16 +5,16 @@
 
 ## 目录说明
 www 程序代码
-www/templates/  存放模板文件
-coroutine  加深理解协程的example
-decorator  加深理解装饰器的example
-doc  代码说明文档
+www/templates/  存放模板文件  
+coroutine  加深理解协程的example  
+decorator  加深理解装饰器的example  
+doc  代码说明文档  
 example  加深理解aiohttp框架及部分库的example
 
 ## UML图
 待补充
 
 ## 框架，库参考链接
-[aiohttp](http://aiohttp.readthedocs.io/en/stable/)
-[jinjia2](http://docs.jinkan.org/docs/jinja2/api.html#id1)
+[aiohttp](http://aiohttp.readthedocs.io/en/stable/)  
+[jinjia2](http://docs.jinkan.org/docs/jinja2/api.html#id1)  
 [python函数](http://www.runoob.com/python/python-built-in-functions.html)
