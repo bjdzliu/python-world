@@ -9,7 +9,7 @@ www/templates/  存放模板文件
 coroutine  加深理解协程的example  
 decorator  加深理解装饰器的example  
 doc  代码说明文档  
-example  加深理解aiohttp框架及部分库的example
+example  加深理解aiohttp框架及部分库的example;加入一个flask架构的创建阿里高速通道的页面。
 
 ## UML图
 待补充
