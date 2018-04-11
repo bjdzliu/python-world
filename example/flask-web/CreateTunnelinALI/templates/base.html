@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+　　<html>
+　　<head>
+　　<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+　　<title>创建高速通道</title>
+　　<style>
+          .saveHistory  {behavior:url(#default#savehistory);}
+　　</style>
+    <script src="{{url_for('static', filename='jquery-3.3.1.js')}}"></script>
+{% block createbutton %} {% endblock %}
+　　</head>
+<body>
+<div class='' style="background:#666; width:500px; height:700px; float:left;">
+{% block formquery %}
+    {% endblock  %}
+    <p><a href="/">back</a></p>
+</div>
+<div class='' style="background:#CCC; width:500px; height:700px; float:left;">
+{% block formqcreate %} {% endblock  %}
+
+
+</div>
+　　</body>
+　　</html>

@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+{% block createbutton %}
+<script>
+$(document).ready(function(){
+
+ <!-- for first create form -->
+  $('#customBtn').on('click', function() {
+  var router_type=$('#RouterType_id1').val()
+  var userid=$('#userid1').val()
+  var akid=$('#akid1').val()
+  var secret=$('#secret1').val()
+  var region=$('#regionid1').val()
+  var OppositeRegionId=$('#OppositeRegionId1').val()
+  var queryed_region=$('#installed_regionid1').val()
+  var spec=$('#specid1').val()
+  var routerid=$('#routerid1').val()
+  var role=$('#roleid1').val()
+
+  var data={
+                'router_type': router_type ,
+                'userid': userid,
+                'akid': akid,
+                'secret': secret,
+                'region': region,  <!-- user in which region-- >
+                'OppositeRegionId': OppositeRegionId,
+                'queryed_region': queryed_region,
+                'spec': spec,
+                'routerid': routerid,
+                'role': role
+            }
+$.ajax({
+    url: "/createaccept",
+    type: "post",
+    data: JSON.stringify(data), <!-- # 转化为json字符串 -->
+    dataType: "json", <!-- 注意：这里是指希望服务端返回json格式的数据 -->
+    contentType: 'application/json;charset=utf-8',
+    success: function(data){
+        alert( data.result_message );
+        $("#result").text(data.RouterInterfaceId);
+    }
+<!-- $(this).resetForm(); // 提交后重置表单 -->
+});
+     return false; <!-- # 阻止表单自动提交事件 -->
+
+});
+
+ <!-- for second create form -->
+$('#customBtn2').on('click', function() {
+  var title=$('#RouterType_id2').val()
+  var data={
+                'title': title ,
+                'content': 4567
+            }
+$.ajax({
+    url: "/formtest",
+    type: "get",
+   data: JSON.stringify(data), <!-- # 转化为json字符串 -->
+ <!--    data:data, -->
+    dataType: "json", <!-- 注意：这里是指希望服务端返回json格式的数据 -->
+    success: function(data){
+        alert( data.title );
+    }
+<!-- $(this).resetForm(); // 提交后重置表单 -->
+});
+     return false; <!-- # 阻止表单自动提交事件 -->
+
+});
+
+
+
+});
+</script>
+{% endblock %}
+
+{% block formquery %}
+<form action="/query" method="post">
+    <legend>Query</legend>
+{% if mydict %}
+    <p><input class=saveHistory name="userid" placeholder="uid" value="{{ mydict.userid }}"></p>
+    <p><input class=saveHistory name="akid" placeholder="accessid" value="{{ mydict.akid }}"></p>
+    <p><input class=saveHistory name="secret" placeholder="secret" value="{{ mydict.secret }}"></p>
+    <p><input name="region" placeholder="region" value="{{ mydict.region }}"></p>
+    <p><input name="query_region" placeholder="query_region" value="{{ mydict.query_region }}"></p>
+    <p><button type="submit">query</button></p>
+{% else  %}
+    <p><input class=saveHistory name="userid" placeholder="uid" value=""></p>
+    <p><input class=saveHistory name="akid" placeholder="accessid" value=""></p>
+    <p><input class=saveHistory name="secret" placeholder="secret" value=""></p>
+    <p><input name="region" placeholder="region" value=""></p>
+    <p><input name="query_region" placeholder="query_region" value=""></p>
+    <p><button type="submit">query</button></p>
+{% endif %}
+  </form>
+<a> RouterId is : {{ vrouterid }} </a>
+    {% if mydict.error %}
+<br><a> Result is : {{ mydict.error }} </a>
+    {% endif %}
+{% endblock  %}
+
+<!-- form left -->
+{% block formqcreate %}
+<form name="create" >
+    <legend>create</legend>
+{% if mydict %}
+    <p><input class=saveHistory id="userid1" name="userid" placeholder="uid" value="{{ mydict.userid }}"></p>
+    <p><input class=saveHistory id="akid1" name="akid" placeholder="accessid" value="{{ mydict.akid }}"></p>
+    <p><input class=saveHistory  id="secret1" name="secret" placeholder="secret" value="{{ mydict.secret }}"></p>
+    <p><input name="region" id="regionid1" placeholder="region" value="{{ mydict.region }}"></p>
+
+    <p><input id="OppositeRegionId1" name="OppositeRegionId" placeholder="OppositeRegionId" value=""></p>
+
+    <p><input id="installed_regionid1" name="queryed_region" placeholder="installed which region" value="{{ mydict.query_region }}"></p>
+    <p> <select>
+            <option value="">select role</option>
+         <option id="roleid1" name="role"  value ="AcceptingSide">AcceptingSide</option>
+        </select></p>
+       <p><select>
+         <option id="RouterType_id1" name="RouterType"  value ="VRouter">VRouter</option>
+        </select></p>
+     <p>  <select>
+      <option name="Spec" id="specid1" value ="Negative">Negative</option>
+        </select>
+    <p><input name="RouterId" id="routerid1" placeholder="RouterId" value=""></p>
+    <!--<p><button type="submit">create</button></p>-->
+    <button id="customBtn" value="test">create</button>
+{% else  %}
+    <p><input class=saveHistory name="userid" placeholder="uid" value=""></p>
+    <p><input class=saveHistory name="akid" placeholder="accessid" value=""></p>
+    <p><input class=saveHistory name="secret" placeholder="secret" value=""></p>
+    <p><input name="region" placeholder="region" value=""></p>
+    <p><input name="query_region" placeholder="installed which region" value=""></p>
+    <p><input name="OppositeRegionId" placeholder="OppositeRegionId" value=""></p>
+        <p> <select>
+            <option value="">select role</option>
+         <option name="role"  value ="AcceptingSide">AcceptingSide</option>
+        </select></p>
+       <p>   <select>
+         <option id="RouterType_id2" name="RouterType"  value ="VRouter">VRouter</option>
+        </select></p>
+     <p>  <select>
+      <option name="Spec"  value ="Negative">Negative</option>
+        </select>
+    <p><input name="RouterId" placeholder="RouterId" value=""></p>
+    <!--<p><button type="submit">create</button></p>-->
+    <button id="customBtn2" onclick="create()" >create</button>
+{% endif %}
+</form>
+<p>The created interface id :<a id="result"> {{ content }} </a></p>
+{% endblock  %}

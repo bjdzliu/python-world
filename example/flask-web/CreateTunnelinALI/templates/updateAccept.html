@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block createbutton %}
+<script>
+$(document).ready(function(){
+
+ <!-- for first create form -->
+  $('#update_accept').on('click', function() {
+  var userid=$('#userid1').val()
+  var akid=$('#akid1').val()
+  var secret=$('#secret1').val()
+  var region=$('#regionid1').val()
+  var queryed_region=$('#installed_regionid1').val()
+  var OppositeRouterId=$('#OppositeRouterId1').val()
+  var OppositeInterfaceId=$('#OppositeInterfaceId1').val()
+  var RouterInterfaceId=$('#RouterInterfaceId1').val()
+  var OppositeRouterTypeId=$('#OppositeRouterTypeId1').val()
+  var DescriptionId=$('#DescriptionId1').val()
+  var OppositeInterfaceOwnerId=$('#OppositeInterfaceOwnerId1').val()
+
+<!-- data 是json 对象 -->
+  var data={
+                'userid': userid,
+                'akid': akid,
+                'secret': secret,
+                'region': region,  <!-- user in which region-- >
+                'queryed_region': queryed_region,
+                'OppositeRouterId': OppositeRouterId,
+                'OppositeInterfaceId': OppositeInterfaceId,
+                'OppositeRouterTypeId': OppositeRouterTypeId,
+                'Description': DescriptionId,
+                'OppositeInterfaceOwnerId': OppositeInterfaceOwnerId,
+                'RouterInterfaceId': RouterInterfaceId
+
+            }
+$.ajax({
+    url: "/updateaccept",
+    type: "post",
+    data: JSON.stringify(data), <!-- # 转化为json字符串 -->
+    dataType: "json", <!-- 返回json对象 -->
+    success: function(data){
+        alert(data.result_message );
+        $("#result").text(data.RequestId);
+    }
+<!-- $(this).resetForm(); // 提交后重置表单 -->
+});
+     return false; <!-- # 阻止表单自动提交事件 -->
+
+});
+
+});
+</script>
+{% endblock %}
+{% block formquery %}
+<form action="/updateaccept" method="post">
+    <legend>update_accept</legend>
+
+    <p><input class=saveHistory id="userid1" name="userid" placeholder="uid" value=""></p>
+    <p><input class=saveHistory id="akid1" name="akid" placeholder="accessid" value=""></p>
+    <p><input class=saveHistory id="secret1" name="secret" placeholder="secret" value=""></p>
+    <p><input id="regionid1"  name="region" placeholder="region" value=""></p>
+    <p><input id="installed_regionid1" name="query_region" placeholder="query_region" value=""></p>
+    <p>Input Init Owner ID: <input id="OppositeInterfaceOwnerId1" name="OppositeInterfaceOwnerId" placeholder="OppositeInterfaceOwnerId" value=""></p>
+    <p>Input Init Router ID: <input id="OppositeRouterId1" name="OppositeRouterId" placeholder="OppositeRouterId" value=""></p>
+    <p>Input Init Router Interface ID: <input id="OppositeInterfaceId1" name="OppositeInterfaceId" placeholder="OppositeInterfaceId" value=""></p>
+    <p>Input Accept RouterInterface ID: <input id="RouterInterfaceId1" name="RouterInterfaceId" placeholder="RouterInterfaceId" value=""></p>
+    <p><input id="DescriptionId1" name="Description" placeholder="Description" value=""></p>
+           <p>OppositeRouterType: <select>
+         <option id="OppositeRouterTypeId1" name="OppositeRouterType"  value ="VRouter">VRouter</option>
+        </select></p>
+
+    <p><button id="update_accept" type="submit">update_accept</button></p>
+
+  </form>
+
+<p>RequestId is : <a id="result"> {{ message }} </a></p>
+
+{% endblock  %}

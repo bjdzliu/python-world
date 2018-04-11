@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+{% block createbutton %}
+<!-- for first create form ;13 vars -->
+<script>
+$(document).ready(function(){
+  $('#customBtn').on('click', function() {
+  var router_type=$('#RouterType_id1').val()
+  var userid=$('#userid1').val()
+  var akid=$('#akid1').val()
+  var secret = $('#secret1').val()
+  var region = $('#regionid1').val()
+  var queryed_region = $('#installed_regionid1').val()
+  var OppositeRegionId = $('#OppositeRegionId1').val()
+  var OppositeRouterId = $('#OppositeRouterId1').val()
+  var OppositeInterfaceOwnerId = $('#OppositeInterfaceOwnerId1').val()
+  var OppositeInterfaceId = $('#OppositeInterfaceId1').val()
+  var spec=$('#specid1').val()
+  var routerid=$('#routerid1').val()
+  var role=$('#roleid1').val()
+
+  var data={
+                'router_type': router_type ,
+                'userid': userid,
+                'akid': akid,
+                'secret': secret,
+                'region': region,  <!-- user in which region-- >
+                'OppositeRegionId': OppositeRegionId,
+                'OppositeRouterId' : OppositeRouterId,
+                'OppositeInterfaceOwnerId': OppositeInterfaceOwnerId,
+                'OppositeInterfaceId': OppositeInterfaceId,
+                'queryed_region': queryed_region,
+                'spec': spec,
+                'routerid': routerid,
+                'role': role
+            }
+$("#customBtn").prop('disabled',true);
+setTimeout(function () {$("#customBtn").prop('disabled',false);}, 5000);
+$.ajax({
+    url: "/createinit",
+    type: "post",
+    data: JSON.stringify(data), <!-- # 转化为json字符串 -->
+    dataType: "json", <!-- 注意：这里是指希望服务端返回json格式的数据 -->
+    success: function(data){
+        alert( data.result_message );
+        $("#result").text(data.RouterInterfaceId)
+    }
+<!-- $(this).resetForm(); // 提交后重置表单 -->
+});
+     return false; <!-- # 阻止表单自动提交事件 -->
+
+});
+
+ <!-- directly create init without query the routerid -->
+$('#customBtn2').on('click', function() {
+  var title=$('#RouterType_id2').val()
+  var data={
+                'title': title ,
+                'content': 4567
+            }
+$("#customBtn2").prop('disabled',true);
+setTimeout(function () {$("#customBtn2").prop('disabled',false);}, 3000);
+$.ajax({
+    url: "/formtest",
+    type: "post",
+    data: JSON.stringify(data), <!-- # 转化为json字符串 -->
+    dataType: "json", <!-- 注意：这里是指希望服务端返回json格式的数据 -->
+    success: function(data){
+
+        alert( data.title );
+    }
+<!-- $(this).resetForm(); // 提交后重置表单 -->
+});
+     return false; <!-- # 阻止表单自动提交事件 -->
+
+});
+
+
+
+});
+</script>
+{% endblock %}
+{% block formquery %}
+<form action="/query2" method="post">  <!-- query2 is responsible to query local routerid -->
+    <legend>Query</legend>
+{% if mydict %}
+    <p><input class=saveHistory name="userid" placeholder="uid" value="{{ mydict.userid }}"></p>
+    <p><input class=saveHistory name="akid" placeholder="accessid" value="{{ mydict.akid }}"></p>
+    <p><input class=saveHistory name="secret" placeholder="secret" value="{{ mydict.secret }}"></p>
+    <p><input name="region" placeholder="region" value="{{ mydict.region }}"></p>
+    <p><input name="query_region" placeholder="query_region" value="{{ mydict.query_region }}"></p>
+    <p><button type="submit">query</button></p>
+{% else  %}
+    <p><input class=saveHistory name="userid" placeholder="uid" value=""></p>
+    <p><input class=saveHistory name="akid" placeholder="accessid" value=""></p>
+    <p><input class=saveHistory name="secret" placeholder="secret" value=""></p>
+    <p><input name="region" placeholder="user in which region" value=""></p>
+    <p><input name="query_region" placeholder="queryed_region" value=""></p>
+    <p><button type="submit">query</button></p>
+{% endif %}
+  </form>
+<a> RouterId is : {{ vrouterid }} </a>
+{% if mydict.error %}
+<br><a> Result is : {{ mydict.error }} </a>
+{% endif %}
+{% endblock  %}
+
+{% block formqcreate %}
+<form name="create" >
+    <legend>create</legend>
+{% if mydict %}
+    <p><input class=saveHistory id="userid1" name="userid" placeholder="uid" value="{{ mydict.userid }}"></p>
+    <p><input class=saveHistory id="akid1" name="akid" placeholder="accessid" value="{{ mydict.akid }}"></p>
+    <p><input class=saveHistory  id="secret1" name="secret" placeholder="secret" value="{{ mydict.secret }}"></p>
+    <p><input name="region" id="regionid1" placeholder="region" value="{{ mydict.region }}"></p>
+<p><input id="installed_regionid1" name="queryed_region" placeholder="installed which region" value="{{ mydict.query_region }}"></p>
+
+        <p><input id="OppositeRouterId1" name="OppositeRouterId" placeholder="OppositeRouterId" value=""></p>
+     <p><input id="OppositeInterfaceOwnerId1" name="OppositeInterfaceOwnerId" placeholder="OppositeInterfaceOwnerId" value=""></p>
+    <p><input id="OppositeInterfaceId1" name="OppositeInterfaceId" placeholder="OppositeInterfaceId" value=""></p>
+        <p><input id="OppositeRegionId1" name="OppositeRegionId" placeholder="OppositeRegionId" value=""></p>
+    <p> <select>
+            <option value="">select role</option>
+         <option id="roleid1" name="role"  value ="InitiatingSide">InitiatingSide</option>
+        </select></p>
+       <p><select>
+         <option id="RouterType_id1" name="RouterType"  value ="VRouter">VRouter</option>
+        </select></p>
+     <p>  <select>
+      <option id="specid1" name="Spec"  value ="Large.2">Large.2</option>
+        </select>
+    <p><input id="routerid1" name="RouterId"  placeholder="RouterId" value=""></p>
+    <!--<p><button type="submit">create</button></p>-->
+    <button id="customBtn" value="test">create</button>
+{% else  %}
+    <p><input class=saveHistory name="userid" placeholder="uid" value=""></p>
+    <p><input class=saveHistory name="akid" placeholder="accessid" value=""></p>
+    <p><input class=saveHistory name="secret" placeholder="secret" value=""></p>
+    <p><input name="region" placeholder="region" value=""></p>
+    <p><input name="query_region" placeholder="installed which region" value=""></p>
+
+    <p><input name="OppositeRouterId" placeholder="OppositeRouterId" value=""></p>
+     <p><input name="OppositeInterfaceOwnerId" placeholder="OppositeInterfaceOwnerId" value=""></p>
+    <p><input name="OppositeInterfaceId" placeholder="OppositeInterfaceId" value=""></p>
+    <p><input name="OppositeRegionId" placeholder="OppositeRegionId" value=""></p>
+        <p> <select>
+            <option value="">select role</option>
+         <option name="role"  value ="InitiatingSide">InitiatingSide</option>
+        </select></p>
+       <p>   <select>
+         <option id="RouterType_id2" name="RouterType"  value ="VRouter">VRouter</option>
+        </select></p>
+     <p>  <select>
+      <option name="Spec"  value ="Large.2">Large.2</option>
+        </select>
+    <p><input name="RouterId" placeholder="RouterId" value=""></p>
+    <!--<p><button type="submit">create</button></p>-->
+    <button id="customBtn2" onclick="create()" >create</button>
+{% endif %}
+</form>
+<p>The created interface id :<a id="result"> {{ content }} </a></p>
+{% endblock  %}

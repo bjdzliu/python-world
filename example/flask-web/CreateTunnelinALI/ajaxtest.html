@@ -1,0 +1,42 @@
+<!--HTML-->
+    <form id="form1" name="form1">
+        <input id="userName" name="userName" value="姓名" />
+        <input id="age" name="age" value="30" />
+        <input type="submit" value="submit" />
+    </form>
+    <input id="myButton" type="button" value="提交" />
+    <!--javascript-->
+    <script type="text/javascript">
+
+        var myData = {
+            "CnName": "用户1",
+            "EnName":"user1"
+        };
+        $(function () {
+            var ajaxFormOption = {
+                type: "post",  //提交方式
+                dataType: "json", //数据类型
+                data: myData,//自定义数据参数，视情况添加
+                url: "TestHandler.ashx?type=ajaxForm", //请求url
+                success: function (data) { //提交成功的回调函数
+                    document.write("success");
+                }
+            };
+
+            //form中有submit按钮——方式1
+            $("#form1").ajaxForm(ajaxFormOption);
+
+            //form中有submit按钮——方式2
+            $("#form1").submit(function () {
+                $(this).ajaxSubmit(ajaxFormOption);
+                return false;
+            });
+
+            //不需要submit按钮，可以是任何元素的click事件
+            $("#myButton").click(function () {
+                $("#form1").ajaxSubmit(ajaxFormOption);
+                return false;
+            });
+
+        });
+    </script>
