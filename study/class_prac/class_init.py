@@ -43,18 +43,13 @@ class Student:
     def choose(self):
         print('%s is choosing a course' %self.name)
 
-print(Student.__dict__)
 stu1=Student('李建刚','男',28)
-
-
 print(stu1.age) # 查看，等同于stu1.__dict__[‘name']
-
 
 Student.choose(stu1)
 
 # 支持添加类属性
 Student.selfattrib="add a new"
-
 print(Student.selfattrib)
 
 # 支持添加对象属性

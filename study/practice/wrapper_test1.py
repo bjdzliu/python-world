@@ -8,8 +8,11 @@ def log(func):
 
 @log
 def add(a,b):
+    # 如果函数有return, 在wrapper中,也需要有return
     return a+b
 
 add(1,2)
+
+
 
 

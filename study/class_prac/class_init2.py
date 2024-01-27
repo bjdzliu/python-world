@@ -1,12 +1,5 @@
-"""
-属性名
-双下划线
-
-"""
-
 class Foo:
     __N=0
-
     def __init__(self,y):
         ## 变形为self._Foo__x
         self.__x=y
@@ -19,7 +12,7 @@ class Foo:
 
 print(Foo.__dict__)
 
-print(Foo._Foo__N)
+print("111111",Foo._Foo__N)
 
 obj1=Foo(100)
 obj2=Foo(200)

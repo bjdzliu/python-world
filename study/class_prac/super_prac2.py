@@ -23,6 +23,7 @@ class Person:
 class Girl(Person):
     def __init__(self):
         # 下面，显示调用父类的init方法,  self.height=160 . 参数第一个是当前子类的类名字，第二个是 self 。
+        # 目的: 在父类里,做一些通用的、所有子类都会的初始化的操作
         super(Girl, self).__init__()
         self.breast = 90
 
@@ -32,9 +33,9 @@ class Girl(Person):
         super(Girl, self).about(name)
         #调用父类的方法
 
-
 if __name__ == "__main__":
     cang = Girl()
+
     #打印super的所使用的类顺序
     print(Girl.mro())
     cang.about("wangguniang")

@@ -61,3 +61,7 @@ print(res3.__next__())
 res=filter(lambda name:name.endswith("test2"),l)
 print("filter's result",res.__next__())
 
+###
+with open('/Users/bjdzliu/Garage/mylab/python/awesome-python3-webapp/study/base/file1', 'r') as file:
+    tt=lambda: file.read(1)
+    print(tt())

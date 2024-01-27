@@ -9,4 +9,8 @@ def log(text):
 @log('execute log : ')
 def now():
     print('2013-12-25')
+
 now()
+
+print(now.__name__)
+

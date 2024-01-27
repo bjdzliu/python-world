@@ -1,3 +1,6 @@
+import os
+current_directory = os.getcwd()
+
 # d={'a':'11','b':'2'}
 # d1=d.__iter__()
 # while True:
@@ -37,7 +40,7 @@ set1={1,2,3}
 set1.__iter__()
 
 #文件对象f，也是一个迭代器对象
-with open('file1.txt', mode='r') as f:
+with open(current_directory+'/iter/file1.txt', mode='r') as f:
     f.__iter__()
     result=f.__next__()
     print(result)
@@ -53,6 +56,5 @@ for key in gg:
 #按照next取值，不需要索引
 #惰性计算：调一次next，内存才有值
 #不能按照索引取值，不能指定某个索引
-#
-#
+
 
