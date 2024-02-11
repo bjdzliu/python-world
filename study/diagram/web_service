@@ -1,0 +1,10 @@
+digraph "Web Service" {
+	graph [fontcolor="#2D3436" fontname="Sans-Serif" fontsize=15 label="Web Service" nodesep=0.60 pad=2.0 rankdir=LR ranksep=0.75 splines=ortho]
+	node [fixedsize=true fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13 height=1.4 imagescale=true labelloc=b shape=box style=rounded width=1.4]
+	edge [color="#7B8894"]
+	"20b0ebfe5e12417cac1c6e0d8c2ff5df" [label=lb height=1.9 image="/Users/qingliu/00-Study/python/awesome-python3-webapp/venv/lib/python3.8/site-packages/resources/aws/network/elastic-load-balancing.png" shape=none]
+	"48a08946940e4f18ab97ee98ea969237" [label=web height=1.9 image="/Users/qingliu/00-Study/python/awesome-python3-webapp/venv/lib/python3.8/site-packages/resources/aws/compute/ec2.png" shape=none]
+	"20b0ebfe5e12417cac1c6e0d8c2ff5df" -> "48a08946940e4f18ab97ee98ea969237" [dir=forward fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13]
+	"82e248b3ccee4a96966272bf40d4aa9d" [label=userdb height=1.9 image="/Users/qingliu/00-Study/python/awesome-python3-webapp/venv/lib/python3.8/site-packages/resources/aws/database/rds.png" shape=none]
+	"48a08946940e4f18ab97ee98ea969237" -> "82e248b3ccee4a96966272bf40d4aa9d" [dir=forward fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13]
+}

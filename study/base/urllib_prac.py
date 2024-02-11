@@ -10,6 +10,7 @@ python 3.x中urllib库和urilib2库合并成了urllib库。。
 from urllib import request
 import urllib
 
+
 # with request.urlopen('https://www.baidu.com') as f:
 #     data = f.read()
 #     print('Status:', f.status, f.reason)
@@ -28,7 +29,7 @@ with request.urlopen(req) as f:
         print('%s: %s' % (k, v))
     print('Data:', f.read().decode('utf-8'))
 
-### azure
+### azure GET
 headers = {"Content-Type": "application/json"}
 params = urllib.parse.urlencode({'api-version': '2018-09-01'})
 url= "https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/dnsZones/{zoneName}/recordsets?%s" % params
@@ -36,3 +37,6 @@ url= "https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups
 req = urllib.request.Request(url, headers=headers)
 res = urllib.request.urlopen(req)
 print(res.read().decode("utf-8"))
+
+
+### POST

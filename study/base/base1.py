@@ -13,6 +13,8 @@ res=x if x>y else y
 ## 生成器表达式
 
 """
+def get():
+    print("base.get")
 
 print("可以输入中文")
 
@@ -68,3 +70,31 @@ with open('file_prac.py',mode="rt",encoding='utf-8') as f:
     res=sum(g)
     print(res)
 
+
+a="ceshi"
+a.join("aa")
+print(a)
+
+'''
+引用拷贝
+In [49]: l
+Out[49]: [{'a': 1}, {'a': 2}, {'a': 3}]
+
+In [50]: def a(p,l=[]):
+    ...:     dic1={}
+    ...:     for i in range(1,4):
+    ...:       dic1["a"]=i
+    ...:       l.append(dic1)
+    ...:
+
+In [51]: l
+Out[51]: [{'a': 1}, {'a': 2}, {'a': 3}]
+
+In [52]: a(p,l)
+
+In [53]: l
+Out[53]: [{'a': 1}, {'a': 2}, {'a': 3}, {'a': 3}, {'a': 3}, {'a': 3}]
+
+append是浅拷贝(引用拷贝)，深拷贝用如下办法：
+alist.append( copy.deepcopy( num ) )
+'''
