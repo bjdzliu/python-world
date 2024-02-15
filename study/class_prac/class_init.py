@@ -1,3 +1,4 @@
+# coding:utf-8
 # #方式一、为对象初始化自己独有的特征
 # class People:
 #     country='China'
