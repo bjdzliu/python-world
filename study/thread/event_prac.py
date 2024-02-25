@@ -7,6 +7,8 @@ logging.basicConfig(level=logging.INFO)
 def add(x:int,y:int):
     logging.info(x+y)
 
+
+## 通过共享事件，协调线程。
 class Timer():
     def __init__(self,interval,fn,*args,**kwargs) -> None:
         self.interval=interval

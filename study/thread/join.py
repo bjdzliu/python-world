@@ -11,12 +11,12 @@ def loop():
     print('thread %s end' % threading.current_thread().name)
 
 
-print(' thread name  %s run' % threading.current_thread().name)
+print(' Main thread name  %s run' % threading.current_thread().name)
 
 t=threading.Thread(target=loop,name="LoopThread")
 t.start()
 
-#主进程等待t
+#主进程等待t,直到t执行完成
 t.join()
 
 for i in range(4):

@@ -7,7 +7,7 @@
 # result1=add_end()
 # result2=add_end()
 # print(result2)
-# #['END', 'END']
+#['END', 'END']
 
 # ### 解决办法是 def add_end(L=None):
 # def add_end(L=None):

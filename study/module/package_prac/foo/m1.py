@@ -1,5 +1,5 @@
 def m1get():
-    print("module in base func is get")
+    print("module in base func is get , m1get()")
     return "m1get's value"
 
 def m2get():

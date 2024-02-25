@@ -1,20 +1,27 @@
 import threading
 
-X='abc'
+
+# 全局变量
+X='global_value=100'
+
+# Create a thread-local storage space
 ctx=threading.local()
 ctx.x=123
 
 print(ctx,type(ctx),ctx.x)
 
 def work():
-    print(X)
     print(ctx)
     ctx.x=567
     ## try without ctx.x=567
-    print(ctx.x)
+    print("in work(): ",ctx.x)
     print("happy")
+    global X
+    X='is changed in work()'
+    print("in work(), global value: ",X)
 
 threading.Thread(target=work).start()
+print("after work() ,X is",X)
 
 ############
 local_school=threading.local()
@@ -32,5 +39,9 @@ t1 = threading.Thread(target= process_thread, args=('Alice',), name='Thread-A')
 t2 = threading.Thread(target= process_thread, args=('Bob',), name='Thread-B')
 t1.start()
 t2.start()
+
 t1.join()
+
 t2.join()
+
+

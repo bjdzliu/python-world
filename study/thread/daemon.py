@@ -2,7 +2,6 @@ import threading
 import logging
 logging.basicConfig(level=logging.INFO)
 
-
 def worker():
     for x in range(100):        
         msg="{}-{} is running!!".format(threading.current_thread(),x)
