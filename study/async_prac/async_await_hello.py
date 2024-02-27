@@ -1,6 +1,11 @@
 
 import  asyncio
 
+async def calcu():
+    print("start calculating")
+    await asyncio.sleep(1)
+    print("end calculating")
+     
 
 async def main():
     print('hello')
@@ -9,7 +14,18 @@ async def main():
     await asyncio.sleep(3)
     print('world')
 
-asyncio.run(main())
+
+## 3.7之前，asyncio.ensure_future
+## 3.7之后，可以用asyncio.create_task()
+tasks=[
+        asyncio.ensure_future(calcu()),
+        asyncio.ensure_future(main())
+]
+
+loop=asyncio.get_event_loop()
+loop.run_until_complete(asyncio.wait(tasks))
+
+#asyncio.run(main())
 
 print("end")
 

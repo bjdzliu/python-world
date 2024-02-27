@@ -10,6 +10,7 @@ q.put("abc")
 print(q.get())
 print(q.get())
 
+为空，返回true
 print(q.empty())
 
 #等待

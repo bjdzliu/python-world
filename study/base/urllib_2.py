@@ -10,6 +10,9 @@ python 3.x中urllib库和urilib2库合并成了urllib库。。
 from urllib import request
 import urllib
 
+import ssl
+ssl._create_default_https_context = ssl._create_unverified_context
+
 
 # with request.urlopen('https://www.baidu.com') as f:
 #     data = f.read()
@@ -20,14 +23,22 @@ import urllib
 
 
 #### 加入头信息的方式
-req = request.Request('http://www.douban.com/')
+req = request.Request(url='http://www.douban.com/',headers={})
+
 req.add_header('User-Agent',
                'Mozilla/6.0 (iPhone; CPU iPhone OS 8_0 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Version/8.0 Mobile/10A5376e Safari/8536.25')
+
 with request.urlopen(req) as f:
     print('Status:', f.status, f.reason)
+    #<class 'http.client.HTTPResponse'>
+    print(type(f))
     for k, v in f.getheaders():
-        print('%s: %s' % (k, v))
+        print('getheaders content ### %s: %s' % (k, v))
     print('Data:', f.read().decode('utf-8'))
+
+
+
+
 
 ### azure GET
 headers = {"Content-Type": "application/json"}

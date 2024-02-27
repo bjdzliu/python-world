@@ -44,8 +44,6 @@ if __name__ == '__main__':
     r=loop.run_until_complete(sss)
     
 
-
-
     ### 执行多个协程对象，一点时间没节约
     ### 因为washing1的 sleep 是阻塞的
     print("执行多个coroutine object")
@@ -65,11 +63,13 @@ if __name__ == '__main__':
     print("执行多个coroutine object")
     start_time = time.time()
     tasks = [
+        #三个协程对象
         washing4(),
         washing5(),
         washing6()
     ]
     #
+
     loop.run_until_complete(asyncio.wait(tasks))
     end_time = time.time()
     print('执行多个coroutine object 总共耗时：{}'.format(end_time-start_time))

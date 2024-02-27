@@ -1,7 +1,11 @@
 import asyncio
 import time
 
-
+'''
+包含：
+协程函数的嵌套
+一个协程函数里，可以有多个await
+'''
 
 # 工作任务2
 async def add_clothes():
@@ -11,7 +15,7 @@ async def add_clothes():
 # 工作任务1， 其中执行工作任务2
 async def washing1():
     print('洗衣机工作之前，需加衣服进去')
-    await add_clothes()  # 等待这个事情完成
+    await add_clothes()  # 等待这个事情完成,等add_clothes()执行结束，才能继续执行
     print('衣服加进去，可以开始工作了。。。。')
     await asyncio.sleep(3)  # 模拟洗衣机工作的耗时
     print('washer1 finished')  # 洗完了
