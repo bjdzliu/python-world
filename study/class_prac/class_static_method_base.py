@@ -3,10 +3,15 @@
 
 
 class A(object):
+    def __init__(self) -> None:
+        self.initvalue=self.func1()
+
     bar = 1
 
     def func1(self):
         print('foo')
+        A.func3()
+        return("func1")
 
     @classmethod
     def func2(cls):
@@ -15,12 +20,15 @@ class A(object):
         cls().func1()  # 调用 foo 方法
         return cls()
 
+    #相当于将外部函数拿进来,定义成静态方法
+    #在class内部，可以用self.xxx 或者 cls.xxx 调用
     @staticmethod  #将函数装饰盛一个静态方法
     def func3():
         print('staitc')
 
 
-obj=A.func2()  # 不需要实例化
+
+obj=A.func2()  # 不需要实例化，直接使用静态方法
 print(obj.bar)
 
 #static 类可以调用func3()； 只有绑定方法才有传参的效果

@@ -22,6 +22,7 @@ if __name__=='__main__':
     server.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
     server.bind(('127.0.0.1', 8087))
     server.listen(5)
+    print(1111)
 
     while True:
         conn,client_addr=server.accept()

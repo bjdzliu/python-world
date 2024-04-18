@@ -2,6 +2,7 @@
 
 from multiprocessing import Process
 import os
+print("process will do this again")
 def run_proc(name):
     print("run %s   ----  %s"%(name,os.getpid()))
 

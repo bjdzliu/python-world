@@ -18,6 +18,8 @@ class Timer():
         self.event=Event()
     def start(self):
         Thread(target=self.__run).start()
+
+    #    
     def cancel(self):
         self.event.set()
     
@@ -28,10 +30,13 @@ class Timer():
         self.event.wait(self.interval)
 
         if not self.event.is_set():
+            #fn是add函数, *self.args 解tuple pack。
             self.fn(*self.args,**self.kwargs)
         delta=(datetime.datetime.now()-start).total_seconds()
         logging.info('finished{}'.format(delta))
 
+#先等待10s
+#执行add 4+50
 t=Timer(10,add,4,50)
 t.start()
 

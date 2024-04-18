@@ -8,7 +8,9 @@ wrapper
 """
 
 #有参数 山炮1号；没有语法糖
-# def deco(func,db_type):
+
+## 装饰器函数
+# def deco(func,db_type):  #一个普通函数作为参数，“file“作为另一个参数
 #     def wrapper(*args,**keys):
 #         if db_type=='file':
 #             print("this is a file auth method")
@@ -17,22 +19,30 @@ wrapper
 #             print("this is db auth method")
 #             func(*args,**keys)
 #     return wrapper
-#
-#
+
+
+# ##普通函数
 # def index(*args,**keys):
-#     print("exec in index")
-#
+#     print("这是普通函数")
+
+# #调用装饰器函数，返回wrapper
 # index=deco(index,"file")
-#
+
 # index()
-#
+# ####
+
 # def home(*args,**keys):
 #     print("exec in home")
 # home=deco(home,"db")
-#
+
 # home()
 
 
+
+# exit(0)
+
+
+############### 装饰器
 def auth(db_type):
     def deco(func):
         def wrapper(*args,**keys):
@@ -44,6 +54,7 @@ def auth(db_type):
                 func(*args,**keys)
         return wrapper
     return deco
+
 
 @auth("file")
 def index(*args,**keys):
