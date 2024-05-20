@@ -37,17 +37,18 @@ print(next(result))
 
 
 #### 
-def dog(a):
+def dog(parameter_1):
     while True:
-        x = yield "a yield return value"
-        print("i got wood bar from dog",a,x)
+        input_x = yield "a yield return value"
+        print("i got wood bar from dog",parameter_1,input_x)
 
-g=dog('end')
+g=dog('func_value')
 # 启动生成器
 next(g)
-g.send("a")
+g.send("input_value")
 
-result=g.send("b")
+
+result=g.send("apple")
 print("yield 'aaa' will output",result)
 
 
