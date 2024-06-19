@@ -28,7 +28,8 @@ async def washing2():
     await asyncio.sleep(2)  # 模拟洗衣机工作的耗时
     print('washer1 finished')  # 洗完了
 
-
+#
+#asyncio.get_event_loop() 用于获取当前的事件循环。如果当前线程还没有事件循环，这个函数会抛出一个错误
 
 start_time = time.time()
 coroutine_1 = washing1() # 协程是一个对象，不能直接运行
